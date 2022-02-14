@@ -17,55 +17,49 @@ void setup() {
   // Begin serial communication at a baud rate of 9600:
   Serial.begin(9600);
 
+  pinMode(13,OUTPUT);
+  
   // Setup sensor:
   dht.begin();
 }
 
 void loop() {
-  // Wait a few seconds between measurements:
-  delay(4000);
+      // Wait a few seconds between measurements:
+      delay(4000);
+    
+      // Read the humidity in %:
+      float h = dht.readHumidity();
+      // Read the temperature as Celsius:
+      float t = dht.readTemperature();
+      // Read the temperature as Fahrenheit:
+      float f = dht.readTemperature(true);
+    
+      // Check if any reads failed and exit early (to try again):
+      if (isnan(h) || isnan(t) || isnan(f)) {
+        Serial.println("Failed to read from DHT sensor!");
+        return;
+      }
+    
+      // Compute heat index in Fahrenheit (default):
+      float hif = dht.computeHeatIndex(f, h);
+      // Compute heat index in Celsius:
+      float hic = dht.computeHeatIndex(t, h, false);
+      
+    Serial.print("Temperature: ");
+    Serial.println(t);
+    Serial.print("Humidity: ");
+    Serial.println(h);
 
-  // Read the humidity in %:
-  float h = dht.readHumidity();
-  // Read the temperature as Celsius:
-  float t = dht.readTemperature();
-  // Read the temperature as Fahrenheit:
-  float f = dht.readTemperature(true);
 
-  // Check if any reads failed and exit early (to try again):
-  if (isnan(h) || isnan(t) || isnan(f)) {
-    Serial.println("Failed to read from DHT sensor!");
-    return;
-  }
-
-  // Compute heat index in Fahrenheit (default):
-  float hif = dht.computeHeatIndex(f, h);
-  // Compute heat index in Celsius:
-  float hic = dht.computeHeatIndex(t, h, false);
-  
-Serial.print("Temperature: ");
-Serial.println(t);
-Serial.print("Humidity: ");
-Serial.println(h);
-
-// Example outputs
-/* 
-  Serial.print("Humidity: ");
-  Serial.print(h);
-  Serial.print(" % ");
-  Serial.print("Temperature: ");
-  Serial.print(t);
-  Serial.print(" \xC2\xB0");
-  Serial.print("C | ");
-  Serial.print(f);
-  Serial.print(" \xC2\xB0");
-  Serial.print("F ");
-  Serial.print("Heat index: ");
-  Serial.print(hic);
-  Serial.print(" \xC2\xB0");
-  Serial.print("C | ");
-  Serial.print(hif);
-  Serial.print(" \xC2\xB0");
-  Serial.println("F");
-*/
+ while(Serial.available()){
+    
+    //wait until a byte was received
+    analogWrite(13, Serial.read());//output received byte
+    //Serial.print(Serial.read());
+    //if(Serial.readString().equals("50")){
+     // analogWrite(13, HIGH);
+  //}else{
+    // analogWrite(13, LOW);
+  //}
+ }
 }
